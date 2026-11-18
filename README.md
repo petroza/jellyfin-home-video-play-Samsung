@@ -1,5 +1,7 @@
 # Jellyfin: domácí filmy na Samsung Smart TV (Tizen)
 
+🇬🇧 [English version](README.en.md)
+
 Domácí filmotéka z PC s Windows do televize Samsung přes **oficiální Jellyfin Server** a **nativní aplikaci
 Jellyfin na televizi**. Žádný vlastní server, žádné přehrávání v prohlížeči televize. Cílem je hlavně
 **stabilní přehrávání** (Direct Play, přetáčení, pokračování od místa, kde jste skončili).
