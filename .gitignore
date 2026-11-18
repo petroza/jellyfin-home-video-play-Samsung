@@ -1,0 +1,20 @@
+# Nikdy necommitovat: instalačky, balíčky aplikace, certifikáty, hesla, logy, média
+*.exe
+*.msi
+*.wgt
+*.p12
+*.pfx
+*.cer
+*.zip
+*.log
+*heslo*
+*password*
+*.pin
+local.config.ps1
+tizen-studio/
+tizen-studio-data/
+cert/
+*.mkv
+*.mp4
+*.avi
+*.srt
