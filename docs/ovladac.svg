@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" width="1000" height="700" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title>Ovladač: funkce tlačítek v aplikaci Jellyfin</title>
+  <rect x="1" y="1" width="998" height="698" rx="16" fill="#f6f8fa" stroke="#d0d7de"/>
+
+  <!-- tělo ovladače -->
+  <rect x="400" y="24" width="160" height="596" rx="46" fill="#2b2f36"/>
+  <rect x="406" y="30" width="148" height="584" rx="41" fill="none" stroke="#454b55"/>
+  <!-- napájení -->
+  <circle cx="480" cy="70" r="14" fill="#c0392b"/>
+  <path d="M480 62 v8 M474 66 a8 8 0 1 0 12 0" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- šipky + OK -->
+  <circle cx="480" cy="190" r="58" fill="#3a3f48"/>
+  <circle cx="480" cy="190" r="26" fill="#4d535e"/>
+  <text x="480" y="196" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">OK</text>
+  <path d="M480 140 l-7 10 h14 z M480 240 l-7 -10 h14 z M430 190 l10 -7 v14 z M530 190 l-10 -7 v14 z" fill="#c9ced6"/>
+  <!-- zpět / domů -->
+  <rect x="425" y="272" width="40" height="26" rx="9" fill="#3a3f48"/>
+  <text x="445" y="291" font-size="16" fill="#fff" text-anchor="middle">↩</text>
+  <rect x="495" y="272" width="40" height="26" rx="9" fill="#3a3f48"/>
+  <text x="515" y="291" font-size="16" fill="#fff" text-anchor="middle">⌂</text>
+  <!-- VOL -->
+  <rect x="422" y="330" width="44" height="130" rx="22" fill="#3a3f48"/>
+  <text x="444" y="360" font-size="22" fill="#fff" text-anchor="middle">+</text>
+  <text x="444" y="400" font-size="12" font-weight="700" fill="#c9ced6" text-anchor="middle">VOL</text>
+  <text x="444" y="448" font-size="22" fill="#fff" text-anchor="middle">−</text>
+  <!-- CH (zvýrazněno) -->
+  <rect x="494" y="330" width="44" height="130" rx="22" fill="#3a3f48" stroke="#f59e0b" stroke-width="3"/>
+  <text x="516" y="361" font-size="18" fill="#fbbf24" text-anchor="middle">▲</text>
+  <text x="516" y="400" font-size="12" font-weight="700" fill="#fbbf24" text-anchor="middle">CH</text>
+  <text x="516" y="447" font-size="18" fill="#fbbf24" text-anchor="middle">▼</text>
+  <!-- přehrát / pauza -->
+  <rect x="440" y="495" width="80" height="30" rx="15" fill="#3a3f48"/>
+  <text x="480" y="515" font-size="13" fill="#fff" text-anchor="middle">▶ ❚❚</text>
+  <!-- mikrofon / reproduktor -->
+  <circle cx="480" cy="580" r="3" fill="#5b616b"/>
+
+  <g stroke="#8c959f" stroke-width="1.5" fill="none">
+    <!-- vpravo -->
+    <path d="M538 190 H630"/>
+    <path d="M540 356 L585 356 L630 330"/>
+    <path d="M540 447 H630"/>
+    <path d="M520 510 H630"/>
+    <!-- vlevo -->
+    <path d="M466 70 H350"/>
+    <path d="M425 285 H350"/>
+    <path d="M422 395 H350"/>
+  </g>
+  <g fill="#8c959f">
+    <circle cx="538" cy="190" r="3"/><circle cx="540" cy="356" r="3"/><circle cx="540" cy="447" r="3"/>
+    <circle cx="520" cy="510" r="3"/><circle cx="466" cy="70" r="3"/><circle cx="425" cy="285" r="3"/><circle cx="422" cy="395" r="3"/>
+  </g>
+
+  <!-- popisky vpravo -->
+  <text x="640" y="185" font-size="19" font-weight="700" fill="#1f2328">Šipky a OK</text>
+  <text x="640" y="208" font-size="15" fill="#57606a">pohyb v menu, přetáčení filmu</text>
+
+  <rect x="628" y="296" width="352" height="82" rx="10" fill="#fff7e6" stroke="#f59e0b"/>
+  <text x="640" y="320" font-size="19" font-weight="700" fill="#b45309">CH ▲  vyrovnání hlasitosti</text>
+  <text x="640" y="345" font-size="15" fill="#1f2328">Vypnuto → 🔊 Vyrovnat hlasitost</text>
+  <text x="640" y="367" font-size="15" fill="#1f2328">→ 🌙 Noční režim → Vypnuto</text>
+
+  <rect x="628" y="418" width="352" height="58" rx="10" fill="#fff7e6" stroke="#f59e0b"/>
+  <text x="640" y="442" font-size="19" font-weight="700" fill="#b45309">CH ▼  vypnout vyrovnání</text>
+  <text x="640" y="465" font-size="15" fill="#1f2328">kdykoli zpět na původní zvuk</text>
+
+  <text x="640" y="516" font-size="19" font-weight="700" fill="#1f2328">Přehrát / pauza</text>
+
+  <!-- popisky vlevo -->
+  <text x="340" y="76" font-size="19" font-weight="700" fill="#1f2328" text-anchor="end">Zapnout / vypnout TV</text>
+  <text x="340" y="280" font-size="19" font-weight="700" fill="#1f2328" text-anchor="end">↩ Zpět</text>
+  <text x="340" y="303" font-size="15" fill="#57606a" text-anchor="end">ukončí přehrávání</text>
+  <text x="340" y="390" font-size="19" font-weight="700" fill="#1f2328" text-anchor="end">VOL  hlasitost TV</text>
+  <text x="340" y="413" font-size="15" fill="#57606a" text-anchor="end">funguje jako vždy</text>
+
+  <!-- poznámka -->
+  <text x="500" y="656" font-size="15" fill="#57606a" text-anchor="middle">CH ▲ / CH ▼ fungují jen během přehrávání filmu. Zvolený režim si aplikace pamatuje i pro další filmy.</text>
+  <text x="500" y="679" font-size="13" fill="#8c959f" text-anchor="middle">Ilustrační kresba: rozložení tlačítek se liší podle modelu ovladače, CH je vždy kolébka vedle VOL.</text>
+</svg>

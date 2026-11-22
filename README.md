@@ -11,6 +11,29 @@ s grafikou NVIDIA RTX.
 
 > Repozitář obsahuje jen princip, skripty a návod. Nejsou v něm filmy, hesla, certifikáty, instalačky ani adresy konkrétní sítě.
 
+## Pro jaké televize to je
+
+Pro **televize Samsung se systémem Tizen**, hlavně modely **2017–2020**, pro které Jellyfin v obchodě aplikací
+není. Rok výroby poznáte podle písmene v označení modelu, například UE70**R**U7092 = 2019.
+
+| Rok | Písmeno v modelu | Tizen | Jellyfin v obchodě Samsung | Tento návod (instalace z PC) | Vyrovnání hlasitosti |
+|---|---|---|---|---|---|
+| 2017 | M (např. UE55**M**U6172) | 3.0 | ❌ | ⚠️ neověřeno | ⚠️ neověřeno |
+| 2018 | N (např. UE55**N**U7172) | 4.0 | ❌ | ⚠️ mělo by fungovat | ⚠️ neověřeno |
+| **2019** | **R** (např. UE70**R**U7092) | **5.0** | ❌ | ✅ **ověřeno** | ✅ **ověřeno** |
+| 2020 | T (např. UE55**T**U7172) | 5.5 | ❌ | ⚠️ mělo by fungovat | ⚠️ neověřeno |
+| 2021 a novější | A, B, C, D… | 6.0+ | ✅ stačí obchod | jen kvůli vyrovnání hlasitosti | ⚠️ neověřeno |
+
+- Ověřeno je to na **UE70RU7092** (2019, Tizen 5.0) s Jellyfinem 12.4. U ostatních modelů se podívejte do seznamu
+  odzkoušených televizí v [jellyfin-tizen-builds/COMPATIBILITY.md](https://github.com/jeppevinkel/jellyfin-tizen-builds/blob/HEAD/COMPATIBILITY.md).
+- U televizí **2021 a novějších** stačí aplikace z obchodu. Instalace z PC má smysl jen tehdy, když chcete
+  vyrovnání hlasitosti na ovladači (aplikaci z obchodu upravit nejde).
+- Samsungy **z roku 2016 a starší** (Tizen 2.x, ještě starší Orsay) mají příliš starý prohlížeč a současný Jellyfin
+  na nich nejspíš nepoběží. **Není to ani pro jiné značky**: LG (webOS) a Android TV / Google TV mají vlastní
+  aplikaci Jellyfin.
+- Režim vývojáře, přes který se aplikace instaluje, mají všechny Samsungy s Tizenem. Nepotřebujete účet Samsung
+  ani nic platit.
+
 ---
 
 ## Jak to funguje
@@ -193,6 +216,8 @@ bez jakéhokoli nastavování v televizi:
 |---|---|
 | **CH ▲** | Vypnuto → 🔊 **Vyrovnat hlasitost** → 🌙 **Noční režim** → Vypnuto |
 | **CH ▼** | vyrovnání vypnout |
+
+![Ovladač: CH ▲ přepíná vyrovnání hlasitosti, CH ▼ ho vypne](docs/ovladac.svg)
 
 Nahoře na obrazovce se na 2 vteřiny ukáže, který režim je zapnutý. Aplikace si režim pamatuje i pro další filmy.
 Mimo přehrávání tlačítko nic nedělá.

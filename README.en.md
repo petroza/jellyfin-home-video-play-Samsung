@@ -12,6 +12,30 @@ NVIDIA RTX graphics card.
 > This repository contains only the concept, scripts and guide. It contains no movies, passwords, certificates,
 > installers or addresses of any real network.
 
+## Which TVs is this for
+
+**Samsung TVs running Tizen**, mainly **2017–2020** models, for which Jellyfin is not available in the app store.
+The year is encoded by a letter in the model name, e.g. UE70**R**U7092 = 2019 (in the US the prefix is UN instead
+of UE).
+
+| Year | Model letter | Tizen | Jellyfin in the Samsung store | This guide (install from PC) | Volume leveling |
+|---|---|---|---|---|---|
+| 2017 | M (e.g. UE55**M**U6172) | 3.0 | ❌ | ⚠️ not tested | ⚠️ not tested |
+| 2018 | N (e.g. UE55**N**U7172) | 4.0 | ❌ | ⚠️ should work | ⚠️ not tested |
+| **2019** | **R** (e.g. UE70**R**U7092) | **5.0** | ❌ | ✅ **tested** | ✅ **tested** |
+| 2020 | T (e.g. UE55**T**U7172) | 5.5 | ❌ | ⚠️ should work | ⚠️ not tested |
+| 2021 and newer | A, B, C, D… | 6.0+ | ✅ the store is enough | only for volume leveling | ⚠️ not tested |
+
+- Tested on a **UE70RU7092** (2019, Tizen 5.0) with Jellyfin 12.4. For other models, check the list of tested TVs
+  in [jellyfin-tizen-builds/COMPATIBILITY.md](https://github.com/jeppevinkel/jellyfin-tizen-builds/blob/HEAD/COMPATIBILITY.md).
+- On **2021 and newer** TVs the store app is enough. Installing from the PC only makes sense if you want volume
+  leveling on the remote (the store app can't be modified).
+- Samsung TVs **from 2016 and older** (Tizen 2.x, or the even older Orsay) have too old a browser; current Jellyfin
+  will most likely not run there. **Not for other brands either**: LG (webOS) and Android TV / Google TV have their
+  own Jellyfin app.
+- Developer mode, used for the install, is available on every Samsung Tizen TV. No Samsung account or payment
+  needed.
+
 ---
 
 ## How it works
@@ -198,6 +222,8 @@ You know the drill: whispered dialogue, deafening explosions. You can add a quic
 |---|---|
 | **CH ▲** | Off → 🔊 **Level volume** → 🌙 **Night mode** → Off |
 | **CH ▼** | turn leveling off |
+
+![Remote: CH ▲ cycles volume leveling, CH ▼ turns it off](docs/remote.svg)
 
 The current mode shows at the top of the screen for 2 seconds. The app remembers it for the next movies too.
 Outside of playback the button does nothing.
