@@ -116,6 +116,28 @@ vývojáře. Hotové sestavené balíčky jsou v
 2. Otevřete `http://localhost:8096` a projděte průvodce. Účet správce si založte sami a heslo si zapamatujte.
    **Proklikejte se až na poslední „Hotovo“** (viz [Řešení problémů](#řešení-problémů)).
 
+#### Víc knihoven (např. filmy podle jazyka)
+
+Každá knihovna je v aplikaci na TV samostatná dlaždice. Hodí se třeba na oddělení filmů s českým a ukrajinským
+dabingem, filmů pro děti nebo seriálů. Princip je jednoduchý: **jedna podsložka = jedna knihovna**.
+
+```
+D:\FILMY\
+├── CZ\   → knihovna „Filmy“
+└── UA\   → knihovna „UA filmy“
+```
+
+- **Při prvním nastavení** (před dokončením průvodce) to udělá skript:
+  ```powershell
+  .\scripts\2_setup_library.ps1 -ServerName 'FILMY' -Libraries @{ 'Filmy' = 'D:\FILMY\CZ'; 'UA filmy' = 'D:\FILMY\UA' }
+  ```
+- **Později** ve webovém rozhraní: **Ovládací panel → Knihovny → Přidat knihovnu**, typ obsahu *Filmy*, složka
+  `D:\FILMY\UA`. U původní knihovny pak v jejím nastavení odeberte kořen `D:\FILMY` a přidejte `D:\FILMY\CZ`, jinak by
+  se UA filmy ukazovaly v obou knihovnách.
+- Žádný film nesmí zůstat přímo v kořeni `D:\FILMY`, jinak v aplikaci zmizí. Přesuňte ho do některé podsložky.
+- Jellyfin pozná film podle cesty k souboru. Po přesunu souboru nebo změně složek knihovny může zmizet rozkoukaná
+  pozice („Pokračovat“). Proto je lepší složky rozdělit hned na začátku.
+
 ### 3. Převod na grafické kartě (NVIDIA)
 
 Nastavení kódování jde změnit jen po přihlášení, proto přes webové rozhraní:
@@ -162,6 +184,51 @@ Cílem ale je, aby převod skoro nikdy nebyl potřeba (Direct Play).
 2. Přihlaste se. Pohodlnější je **Rychlé připojení**: televize ukáže kód a vy ho potvrdíte na PC nebo mobilu,
    kde jste přihlášení (ikona uživatele → Rychlé připojení). Heslo pak nemusíte psát ovladačem.
 
+### 6. Vyrovnání hlasitosti na ovladači (volitelné)
+
+Znáte to: dialogy šeptají a výbuchy řvou. Do aplikace jde přidat rychlou volbu na **tlačítko kanálů** ovladače,
+bez jakéhokoli nastavování v televizi:
+
+| Během přehrávání filmu | Co se stane |
+|---|---|
+| **CH ▲** | Vypnuto → 🔊 **Vyrovnat hlasitost** → 🌙 **Noční režim** → Vypnuto |
+| **CH ▼** | vyrovnání vypnout |
+
+Nahoře na obrazovce se na 2 vteřiny ukáže, který režim je zapnutý. Aplikace si režim pamatuje i pro další filmy.
+Mimo přehrávání tlačítko nic nedělá.
+
+```mermaid
+flowchart LR
+    V["Video v aplikaci"] --> S["Web Audio<br/>MediaElementSource"]
+    S --> K["Kompresor<br/>ztiší špičky"]
+    K --> G["Zesílení<br/>zvedne dialogy"]
+    G --> R["Reproduktory TV"]
+    S -. "Vypnuto = zvuk jde beze změny" .-> R
+```
+
+- **Vyrovnat hlasitost**: mírná komprese (práh −28 dB, poměr 4:1, +5 dB). Hodí se na běžné večerní sledování.
+- **Noční režim**: silná komprese (práh −40 dB, poměr 12:1, +11 dB). Výbuchy a hudba jsou skoro stejně hlasité
+  jako řeč.
+- **Pojistky**: ve stavu *Vypnuto* skript na zvuk vůbec nesahá. Když by po zapnutí bylo ticho (televize Web Audio
+  u videa nepodporuje), sám vrátí původní zvuk a ukáže hlášku.
+- Jellyfin jinak tlačítko kanálů používá k přeskočení na další položku. Během filmu ho skript zachytí, takže film
+  nepřeskočí.
+
+**Instalace:** skript přidá [tv/vyrovnani.js](tv/vyrovnani.js) do staženého balíčku. Originál zůstane beze změny.
+Nový balíček pak nainstalujete obvyklým skriptem jako aktualizaci, takže přihlášení na TV zůstane.
+
+```powershell
+.\scripts\4_add_volume_leveling.ps1 -Wgt C:\Downloads\Jellyfin.wgt
+# -> C:\Downloads\vyrovnani\Jellyfin.wgt
+.\scripts\3_install_tv.ps1 -TvIp 192.168.1.20 -ExpectedModel UE70RU7092UXXH -ExpectedMac aa:bb:cc:dd:ee:ff `
+                           -Wgt C:\Downloads\vyrovnani\Jellyfin.wgt -TizenRoot C:\tizen-studio
+```
+
+**Návrat zpět:** nainstalujte stejným způsobem původní `C:\Downloads\Jellyfin.wgt`.
+**Při aktualizaci serveru** stáhněte nový `.wgt` a skript 4 spusťte znovu, jinak vyrovnání v nové verzi nebude.
+
+Ověřeno na UE70RU7092 (Tizen 5.0) s Jellyfinem 12.4.
+
 ---
 
 ## Co televize 2019 (Tizen 5) umí přehrát přímo
@@ -190,6 +257,8 @@ i s důvodem.
 | `tv_info.py` hlásí `developerMode: 0` | Některé modely hlásí 0, i když je režim zapnutý. Rozhoduje, jestli projde `sdb connect IP:26101`. |
 | `sdb connect` neprojde | Režim vývojáře je zapnutý s jinou IP, TV po zapnutí nebyla restartovaná, nebo PC a TV nejsou ve stejné síti. |
 | Po aktualizaci serveru aplikace na TV hlásí chybu | Verze aplikace a serveru se liší. Stáhněte nový `.wgt` stejné verze a spusťte znovu krok 4.5. |
+| `tv_info.py` nebo `sdb connect` na staré IP neodpovídá | TV dostala od routeru jinou adresu (DHCP). Najděte ji podle MAC: `Get-NetNeighbor \| Where-Object LinkLayerAddress -like 'AA-BB-CC*'`. Trvale pomůže rezervace IP v routeru. |
+| CH ▲ během filmu přeskočí na další film | Je nainstalovaná aplikace bez vyrovnání hlasitosti (např. po aktualizaci). Spusťte znovu krok 6. |
 | Volání API vrací 401 | Od verze 12 nefunguje `?api_key=` v URL. Použijte hlavičku `Authorization: MediaBrowser Client="x", Device="x", DeviceId="x", Version="1", Token="…"`. |
 
 ---

@@ -121,6 +121,28 @@ too. The procedure is the same and uses the same certificate.
 2. Open `http://localhost:8096` and go through the wizard. Create the admin account yourself and remember the
    password. **Click through to the very last "Finish"** (see [Troubleshooting](#troubleshooting)).
 
+#### Several libraries (e.g. movies by language)
+
+Each library is a separate tile in the TV app. Use it to keep, say, Czech-dubbed and Ukrainian-dubbed movies apart,
+or kids' movies, or TV shows. The rule is simple: **one subfolder = one library**.
+
+```
+D:\MOVIES\
+├── CZ\   → library "Filmy"
+└── UA\   → library "UA filmy"
+```
+
+- **During the initial setup** (before finishing the wizard) the script does it for you:
+  ```powershell
+  .\scripts\2_setup_library.ps1 -ServerName 'MOVIES' -Libraries @{ 'Filmy' = 'D:\MOVIES\CZ'; 'UA filmy' = 'D:\MOVIES\UA' }
+  ```
+- **Later**, in the web UI: **Dashboard → Libraries → Add Media Library**, content type *Movies*, folder
+  `D:\MOVIES\UA`. Then edit the original library: remove the root `D:\MOVIES` and add `D:\MOVIES\CZ`, otherwise
+  the UA movies would show up in both libraries.
+- No movie may stay directly in the root `D:\MOVIES`, or it disappears from the app. Move it into a subfolder.
+- Jellyfin identifies a movie by its file path. Moving files or changing library folders can lose the "Continue
+  watching" position, so it is best to split the folders right at the start.
+
 ### 3. GPU transcoding (NVIDIA)
 
 Encoding settings can only be changed after signing in, so use the web UI:
@@ -167,6 +189,55 @@ The goal, though, is that transcoding is almost never needed (Direct Play).
 2. Sign in. The easier way is **Quick Connect**: the TV shows a code and you approve it on a PC or phone where you
    are already signed in (user icon → Quick Connect). You don't have to type the password with the remote.
 
+### 6. Volume leveling on the remote (optional)
+
+You know the drill: whispered dialogue, deafening explosions. You can add a quick toggle on the remote's
+**channel button**, with no TV settings to touch:
+
+| During movie playback | What happens |
+|---|---|
+| **CH ▲** | Off → 🔊 **Level volume** → 🌙 **Night mode** → Off |
+| **CH ▼** | turn leveling off |
+
+The current mode shows at the top of the screen for 2 seconds. The app remembers it for the next movies too.
+Outside of playback the button does nothing.
+
+```mermaid
+flowchart LR
+    V["Video in the app"] --> S["Web Audio<br/>MediaElementSource"]
+    S --> K["Compressor<br/>tames peaks"]
+    K --> G["Gain<br/>lifts dialogue"]
+    G --> R["TV speakers"]
+    S -. "Off = audio passes unchanged" .-> R
+```
+
+- **Level volume**: mild compression (threshold −28 dB, ratio 4:1, +5 dB). Good for regular evening viewing.
+- **Night mode**: strong compression (threshold −40 dB, ratio 12:1, +11 dB). Explosions and music end up almost as
+  loud as speech.
+- **Safety nets**: in *Off* the script does not touch the audio at all. If turning it on results in silence (the TV
+  doesn't support Web Audio for video), it restores the original audio by itself and shows a message.
+- Jellyfin normally uses the channel button to skip to the next item. During a movie the script catches it, so the
+  movie doesn't skip.
+
+The on-screen messages are in Czech; edit the `MODES` list at the top of [tv/vyrovnani.js](tv/vyrovnani.js) to
+translate them or tune the compressor.
+
+**Install:** the script adds [tv/vyrovnani.js](tv/vyrovnani.js) into the downloaded package. The original stays
+unchanged. Install the new package with the usual script as an upgrade, so the TV stays signed in.
+
+```powershell
+.\scripts\4_add_volume_leveling.ps1 -Wgt C:\Downloads\Jellyfin.wgt
+# -> C:\Downloads\vyrovnani\Jellyfin.wgt
+.\scripts\3_install_tv.ps1 -TvIp 192.168.1.20 -ExpectedModel UE70RU7092UXXH -ExpectedMac aa:bb:cc:dd:ee:ff `
+                           -Wgt C:\Downloads\vyrovnani\Jellyfin.wgt -TizenRoot C:\tizen-studio
+```
+
+**Rolling back:** install the original `C:\Downloads\Jellyfin.wgt` the same way.
+**When you update the server**, download the new `.wgt` and run script 4 again, otherwise the new version won't have
+leveling.
+
+Tested on UE70RU7092 (Tizen 5.0) with Jellyfin 12.4.
+
 ---
 
 ## What a 2019 TV (Tizen 5) plays directly
@@ -195,6 +266,8 @@ Transcode, including the reason.
 | `tv_info.py` reports `developerMode: 0` | Some models report 0 even when the mode is on. What counts is whether `sdb connect IP:26101` succeeds. |
 | `sdb connect` fails | Developer mode is set with a different IP, the TV wasn't restarted after enabling it, or the PC and TV are on different networks. |
 | The TV app shows an error after a server update | The app and server versions differ. Download a new `.wgt` of the same version and repeat step 4.5. |
+| `tv_info.py` or `sdb connect` gets no answer on the old IP | The router gave the TV a different address (DHCP). Find it by MAC: `Get-NetNeighbor \| Where-Object LinkLayerAddress -like 'AA-BB-CC*'`. A DHCP reservation in the router fixes it for good. |
+| CH ▲ during a movie skips to the next movie | The installed app has no volume leveling (e.g. after an update). Run step 6 again. |
 | API calls return 401 | Since version 12, `?api_key=` in the URL no longer works. Use the header `Authorization: MediaBrowser Client="x", Device="x", DeviceId="x", Version="1", Token="…"`. |
 
 ---
