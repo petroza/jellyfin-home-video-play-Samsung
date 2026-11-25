@@ -20,16 +20,17 @@ of UE).
 
 | Year | Model letter | Tizen | Jellyfin in the Samsung store | This guide (install from PC) | Volume leveling |
 |---|---|---|---|---|---|
-| 2017 | M (e.g. UE55**M**U6172) | 3.0 | ❌ | ⚠️ not tested | ⚠️ not tested |
-| 2018 | N (e.g. UE55**N**U7172) | 4.0 | ❌ | ⚠️ should work | ⚠️ not tested |
-| **2019** | **R** (e.g. UE70**R**U7092) | **5.0** | ❌ | ✅ **tested** | ✅ **tested** |
-| 2020 | T (e.g. UE55**T**U7172) | 5.5 | ❌ | ⚠️ should work | ⚠️ not tested |
-| 2021 and newer | A, B, C, D… | 6.0+ | ✅ the store is enough | only for volume leveling | ⚠️ not tested |
+| 2017 | M (e.g. UE55**M**U6172) | 3.0 | ❌ | ⚠️ not tested | ⚠️ probably not |
+| 2018 | N (e.g. UE55**N**U7172) | 4.0 | ❌ | ⚠️ should work | ⚠️ probably not |
+| **2019** | **R** (e.g. UE70**R**U7092) | **5.0** | ❌ | ✅ **tested** | ❌ **does not work** |
+| 2020 | T (e.g. UE55**T**U7172) | 5.5 | ❌ | ⚠️ should work | ⚠️ probably not |
+| 2021 and newer | A, B, C, D… | 6.0+ | ✅ the store is enough | not needed | ⚠️ probably not |
 
 - Tested on a **UE70RU7092** (2019, Tizen 5.0) with Jellyfin 12.4. For other models, check the list of tested TVs
   in [jellyfin-tizen-builds/COMPATIBILITY.md](https://github.com/jeppevinkel/jellyfin-tizen-builds/blob/HEAD/COMPATIBILITY.md).
-- On **2021 and newer** TVs the store app is enough. Installing from the PC only makes sense if you want volume
-  leveling on the remote (the store app can't be modified).
+- On **2021 and newer** TVs the store app is enough.
+- **In-app volume leveling (step 6) does not work on the tested TV** – see the note in step 6. Use the TV's built-in
+  **Auto Volume** instead.
 - Samsung TVs **from 2016 and older** (Tizen 2.x, or the even older Orsay) have too old a browser; current Jellyfin
   will most likely not run there. **Not for other brands either**: LG (webOS) and Android TV / Google TV have their
   own Jellyfin app.
@@ -213,7 +214,18 @@ The goal, though, is that transcoding is almost never needed (Direct Play).
 2. Sign in. The easier way is **Quick Connect**: the TV shows a code and you approve it on a PC or phone where you
    are already signed in (user icon → Quick Connect). You don't have to type the password with the remote.
 
-### 6. Volume leveling on the remote (optional)
+### 6. Volume leveling on the remote (experimental – does not work on Samsung TVs)
+
+> ⚠️ **It does not work on the UE70RU7092 (Tizen 5.0).** The TV plays video through its hardware player and never
+> routes the video's audio into Web Audio. The leveler receives silence, the safety net restores the original
+> audio and shows "Vyrovnání tady nejde – zvuk vrácen" (leveling not possible here). It works in a desktop browser.
+> Other Samsung TVs most likely behave the same
+> ([a similar report for a 2021 TV](https://forum.developer.samsung.com/t/webaudio-on-tizentv/25669)).
+>
+> **What works:** the TV's built-in *Settings → Sound → Expert Settings → Auto Volume* (**Normal** / **Night**).
+> Set it once and it applies to everything, Jellyfin included.
+>
+> The description below stays for anyone who wants to try it on another device or improve it.
 
 You know the drill: whispered dialogue, deafening explosions. You can add a quick toggle on the remote's
 **channel button**, with no TV settings to touch:
@@ -262,7 +274,8 @@ unchanged. Install the new package with the usual script as an upgrade, so the T
 **When you update the server**, download the new `.wgt` and run script 4 again, otherwise the new version won't have
 leveling.
 
-Tested on UE70RU7092 (Tizen 5.0) with Jellyfin 12.4.
+Tried on UE70RU7092 (Tizen 5.0) with Jellyfin 12.4: the app installs and CH ▲ no longer skips the movie, but the
+audio leveling itself does not work on this TV (see the warning above).
 
 ---
 
@@ -293,7 +306,8 @@ Transcode, including the reason.
 | `sdb connect` fails | Developer mode is set with a different IP, the TV wasn't restarted after enabling it, or the PC and TV are on different networks. |
 | The TV app shows an error after a server update | The app and server versions differ. Download a new `.wgt` of the same version and repeat step 4.5. |
 | `tv_info.py` or `sdb connect` gets no answer on the old IP | The router gave the TV a different address (DHCP). Find it by MAC: `Get-NetNeighbor \| Where-Object LinkLayerAddress -like 'AA-BB-CC*'`. A DHCP reservation in the router fixes it for good. |
-| CH ▲ during a movie skips to the next movie | The installed app has no volume leveling (e.g. after an update). Run step 6 again. |
+| CH ▲ during a movie skips to the next movie | Normal Jellyfin behaviour (channel = next item). Step 6 changes it, but the leveling itself does not work on Samsung TVs. |
+| After a router restart the TV can't find the server | The PC got a different IP. Set a DHCP reservation for the PC (by MAC) in the router – on an Apple AirPort in AirPort Utility: Internet → DHCP → DHCP Reservations. |
 | API calls return 401 | Since version 12, `?api_key=` in the URL no longer works. Use the header `Authorization: MediaBrowser Client="x", Device="x", DeviceId="x", Version="1", Token="…"`. |
 
 ---

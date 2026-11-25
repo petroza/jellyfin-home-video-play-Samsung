@@ -18,16 +18,17 @@ není. Rok výroby poznáte podle písmene v označení modelu, například UE70
 
 | Rok | Písmeno v modelu | Tizen | Jellyfin v obchodě Samsung | Tento návod (instalace z PC) | Vyrovnání hlasitosti |
 |---|---|---|---|---|---|
-| 2017 | M (např. UE55**M**U6172) | 3.0 | ❌ | ⚠️ neověřeno | ⚠️ neověřeno |
-| 2018 | N (např. UE55**N**U7172) | 4.0 | ❌ | ⚠️ mělo by fungovat | ⚠️ neověřeno |
-| **2019** | **R** (např. UE70**R**U7092) | **5.0** | ❌ | ✅ **ověřeno** | ✅ **ověřeno** |
-| 2020 | T (např. UE55**T**U7172) | 5.5 | ❌ | ⚠️ mělo by fungovat | ⚠️ neověřeno |
-| 2021 a novější | A, B, C, D… | 6.0+ | ✅ stačí obchod | jen kvůli vyrovnání hlasitosti | ⚠️ neověřeno |
+| 2017 | M (např. UE55**M**U6172) | 3.0 | ❌ | ⚠️ neověřeno | ⚠️ spíš ne |
+| 2018 | N (např. UE55**N**U7172) | 4.0 | ❌ | ⚠️ mělo by fungovat | ⚠️ spíš ne |
+| **2019** | **R** (např. UE70**R**U7092) | **5.0** | ❌ | ✅ **ověřeno** | ❌ **nefunguje** |
+| 2020 | T (např. UE55**T**U7172) | 5.5 | ❌ | ⚠️ mělo by fungovat | ⚠️ spíš ne |
+| 2021 a novější | A, B, C, D… | 6.0+ | ✅ stačí obchod | není potřeba | ⚠️ spíš ne |
 
 - Ověřeno je to na **UE70RU7092** (2019, Tizen 5.0) s Jellyfinem 12.4. U ostatních modelů se podívejte do seznamu
   odzkoušených televizí v [jellyfin-tizen-builds/COMPATIBILITY.md](https://github.com/jeppevinkel/jellyfin-tizen-builds/blob/HEAD/COMPATIBILITY.md).
-- U televizí **2021 a novějších** stačí aplikace z obchodu. Instalace z PC má smysl jen tehdy, když chcete
-  vyrovnání hlasitosti na ovladači (aplikaci z obchodu upravit nejde).
+- U televizí **2021 a novějších** stačí aplikace z obchodu.
+- **Vyrovnání hlasitosti v aplikaci (krok 6) na ověřené TV nefunguje** – viz poznámka v kroku 6. Místo něj použijte
+  vestavěnou funkci televize **Automatická hlasitost**.
 - Samsungy **z roku 2016 a starší** (Tizen 2.x, ještě starší Orsay) mají příliš starý prohlížeč a současný Jellyfin
   na nich nejspíš nepoběží. **Není to ani pro jiné značky**: LG (webOS) a Android TV / Google TV mají vlastní
   aplikaci Jellyfin.
@@ -207,7 +208,17 @@ Cílem ale je, aby převod skoro nikdy nebyl potřeba (Direct Play).
 2. Přihlaste se. Pohodlnější je **Rychlé připojení**: televize ukáže kód a vy ho potvrdíte na PC nebo mobilu,
    kde jste přihlášení (ikona uživatele → Rychlé připojení). Heslo pak nemusíte psát ovladačem.
 
-### 6. Vyrovnání hlasitosti na ovladači (volitelné)
+### 6. Vyrovnání hlasitosti na ovladači (experimentální – na Samsung TV nefunguje)
+
+> ⚠️ **Na UE70RU7092 (Tizen 5.0) to nefunguje.** Televize přehrává video hardwarovým přehrávačem a zvuk videa do
+> Web Audio vůbec nepustí. Vyrovnávač dostane ticho, pojistka vrátí původní zvuk a ukáže hlášku
+> „Vyrovnání tady nejde – zvuk vrácen“. V prohlížeči na PC funguje. Jiné televize Samsung se nejspíš chovají
+> stejně ([podobná zkušenost s TV 2021](https://forum.developer.samsung.com/t/webaudio-on-tizentv/25669)).
+>
+> **Co funguje:** vestavěná funkce televize *Nastavení → Zvuk → Nastavení pro odborníky → Automatická hlasitost*
+> (**Normální** / **Noc**). Nastaví se jednou a platí pro všechno včetně Jellyfinu.
+>
+> Popis níže zůstává pro zájemce, kteří to chtějí zkusit na jiném zařízení nebo to vylepšit.
 
 Znáte to: dialogy šeptají a výbuchy řvou. Do aplikace jde přidat rychlou volbu na **tlačítko kanálů** ovladače,
 bez jakéhokoli nastavování v televizi:
@@ -252,7 +263,8 @@ Nový balíček pak nainstalujete obvyklým skriptem jako aktualizaci, takže p�
 **Návrat zpět:** nainstalujte stejným způsobem původní `C:\Downloads\Jellyfin.wgt`.
 **Při aktualizaci serveru** stáhněte nový `.wgt` a skript 4 spusťte znovu, jinak vyrovnání v nové verzi nebude.
 
-Ověřeno na UE70RU7092 (Tizen 5.0) s Jellyfinem 12.4.
+Vyzkoušeno na UE70RU7092 (Tizen 5.0) s Jellyfinem 12.4: aplikace se nainstaluje a CH ▲ nepřeskočí film, ale
+vyrovnání zvuku na této TV nefunguje (viz upozornění výše).
 
 ---
 
@@ -283,7 +295,8 @@ i s důvodem.
 | `sdb connect` neprojde | Režim vývojáře je zapnutý s jinou IP, TV po zapnutí nebyla restartovaná, nebo PC a TV nejsou ve stejné síti. |
 | Po aktualizaci serveru aplikace na TV hlásí chybu | Verze aplikace a serveru se liší. Stáhněte nový `.wgt` stejné verze a spusťte znovu krok 4.5. |
 | `tv_info.py` nebo `sdb connect` na staré IP neodpovídá | TV dostala od routeru jinou adresu (DHCP). Najděte ji podle MAC: `Get-NetNeighbor \| Where-Object LinkLayerAddress -like 'AA-BB-CC*'`. Trvale pomůže rezervace IP v routeru. |
-| CH ▲ během filmu přeskočí na další film | Je nainstalovaná aplikace bez vyrovnání hlasitosti (např. po aktualizaci). Spusťte znovu krok 6. |
+| CH ▲ během filmu přeskočí na další film | Normální chování Jellyfinu (kanál = další položka). Krok 6 to mění, ale vyrovnání na Samsung TV nefunguje. |
+| Po restartu routeru TV nenajde server | PC dostalo jinou IP. V routeru nastavte pro PC rezervaci adresy (DHCP rezervace podle MAC) – u Apple AirPort v aplikaci AirPort Utility: Internet → DHCP → DHCP Reservations. |
 | Volání API vrací 401 | Od verze 12 nefunguje `?api_key=` v URL. Použijte hlavičku `Authorization: MediaBrowser Client="x", Device="x", DeviceId="x", Version="1", Token="…"`. |
 
 ---
