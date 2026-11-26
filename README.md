@@ -128,6 +128,8 @@ vývojáře. Hotové sestavené balíčky jsou v
    ```powershell
    Get-NetConnectionProfile
    ```
+4. **Nastavte PC v routeru pevnou adresu** (DHCP rezervaci). Jinak po restartu routeru televize server nenajde,
+   viz [Pozor na adresu PC](#️-pozor-na-adresu-pc-nastavte-ji-natrvalo).
 
 ### 2. Knihovna filmů
 
@@ -284,6 +286,54 @@ i s důvodem.
 
 ---
 
+## Tipy pro televizi
+
+### ⚠️ Pozor na adresu PC: nastavte ji natrvalo
+
+Televize si pamatuje server **podle IP adresy** (např. `192.168.1.10:8096`) a stejně tak režim vývojáře (Host PC IP).
+Router ale adresy rozdává dynamicky a **po restartu routeru může PC dostat jinou adresu**. Televize pak hlásí, že
+server nenajde, a nainstalovat do ní nejde nic.
+
+- **Řešení jednou provždy:** v routeru nastavte pro PC **rezervaci adresy** (DHCP rezervace, „statické přidělení“,
+  „Address Reservation“) podle MAC adresy síťové karty PC. MAC zjistíte příkazem `Get-NetAdapter`.
+- Rezervujte tu adresu, kterou PC má teď (`ipconfig`). Na televizi pak nemusíte nic měnit.
+- Některé routery nemají webové nastavení a nastavují se jen aplikací výrobce. Rezervace bývá v části *DHCP*.
+- Když už se to stalo: buď v routeru PC vraťte původní adresu, nebo na TV zadejte nový server (`nová-IP:8096`)
+  a v režimu vývojáře novou Host PC IP.
+
+### Některé filmy vypadají „moc plynule“ (efekt telenovely)
+
+Filmy mají skoro vždy **24 snímků za sekundu** (23,976). Když některý působí plynule jako televizní zprávy, obvykle
+to **nedělá soubor, ale televize**: funkce **Auto Motion Plus** (u novějších modelů *Čistota obrazu*) dopočítává
+mezisnímky.
+
+- Samsung má **oddělené nastavení obrazu pro HDR**. Proto se to často týká jen 4K HDR filmů, zatímco běžné filmy
+  vypadají normálně.
+- **Oprava:** pusťte HDR film (aby televize byla v HDR režimu) a pak *Nastavení → Obraz → Nastavení pro odborníky →
+  Auto Motion Plus* → **Vypnuto**, nebo **Vlastní** s *Rozmazání* i *Chvění* na **0**. Nastavení se uloží jen pro
+  režim, ve kterém je televize právě teď, takže to případně zopakujte i u běžného (SDR) filmu.
+- Skutečnou snímkovou frekvenci souboru uvidíte v Jellyfinu v detailu filmu (Informace o médiu → *Snímková
+  frekvence*). **25 fps** jsou evropské TV a DVD verze, **50 / 60 fps** televizní dokumenty, a **48 fps** u filmu
+  z kina znamená, že někdo snímky uměle zdvojil. Pak pomůže jen jiná verze souboru.
+
+### Hlasitost: tiché dialogy, hlasité výbuchy
+
+*Nastavení → Zvuk → Nastavení pro odborníky → Automatická hlasitost* → **Normální** (nebo **Noc**). Platí pro
+všechny aplikace včetně Jellyfinu. (Vyrovnání přímo v aplikaci na Samsungu nejde, viz krok 6.)
+
+### Mazání filmů z televize
+
+Uživatel, který má povolené mazání (správce ho má automaticky, ostatním ho zapnete v *Ovládací panel → Uživatelé →
+uživatel → Povolit mazání médií*), může film smazat přímo na TV: detail filmu → **⋮** (nebo podržet **OK** na
+plakátu) → **Smazat**.
+
+- Mazání je **trvalé**: soubor nejde do koše. Smažou se i soubory se stejným názvem vedle něj (titulky).
+- Služba Jellyfin musí mít ke složce s filmy právo zápisu. Na datových discích to obvykle platí (*Authenticated
+  Users: Modify*), ověříte to příkazem `icacls D:\FILMY`.
+- Kdo by neměl mazat (děti, návštěva), ať má vlastní účet bez tohoto práva.
+
+---
+
 ## Řešení problémů
 
 | Příznak | Příčina / řešení |
@@ -296,7 +346,7 @@ i s důvodem.
 | Po aktualizaci serveru aplikace na TV hlásí chybu | Verze aplikace a serveru se liší. Stáhněte nový `.wgt` stejné verze a spusťte znovu krok 4.5. |
 | `tv_info.py` nebo `sdb connect` na staré IP neodpovídá | TV dostala od routeru jinou adresu (DHCP). Najděte ji podle MAC: `Get-NetNeighbor \| Where-Object LinkLayerAddress -like 'AA-BB-CC*'`. Trvale pomůže rezervace IP v routeru. |
 | CH ▲ během filmu přeskočí na další film | Normální chování Jellyfinu (kanál = další položka). Krok 6 to mění, ale vyrovnání na Samsung TV nefunguje. |
-| Po restartu routeru TV nenajde server | PC dostalo jinou IP. V routeru nastavte pro PC rezervaci adresy (DHCP rezervace podle MAC) – u Apple AirPort v aplikaci AirPort Utility: Internet → DHCP → DHCP Reservations. |
+| Po restartu routeru TV nenajde server | PC dostalo jinou IP. V routeru nastavte pro PC rezervaci adresy (DHCP rezervace podle MAC). |
 | Volání API vrací 401 | Od verze 12 nefunguje `?api_key=` v URL. Použijte hlavičku `Authorization: MediaBrowser Client="x", Device="x", DeviceId="x", Version="1", Token="…"`. |
 
 ---

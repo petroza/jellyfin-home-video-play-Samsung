@@ -133,6 +133,8 @@ too. The procedure is the same and uses the same certificate.
    ```powershell
    Get-NetConnectionProfile
    ```
+4. **Give the PC a permanent address in the router** (DHCP reservation). Otherwise the TV won't find the server after a
+   router restart, see [Mind the PC's address](#️-mind-the-pcs-address-make-it-permanent).
 
 ### 2. Movie library
 
@@ -295,6 +297,55 @@ Transcode, including the reason.
 
 ---
 
+## TV tips
+
+### ⚠️ Mind the PC's address: make it permanent
+
+The TV remembers the server **by IP address** (e.g. `192.168.1.10:8096`), and so does developer mode (Host PC IP).
+But the router hands out addresses dynamically, and **after a router restart the PC may get a different address**.
+The TV then says it can't find the server, and nothing can be installed on it.
+
+- **Fix it once and for all:** in the router, set an **address reservation** for the PC (DHCP reservation, "static
+  lease", "Address Reservation") by the MAC address of the PC's network card. Find the MAC with `Get-NetAdapter`.
+- Reserve the address the PC has right now (`ipconfig`). Then nothing has to change on the TV.
+- Some routers have no web interface and are set up only through the manufacturer's app; the reservation is
+  usually under *DHCP*.
+- If it already happened: either give the PC its old address back in the router, or enter the new server on the TV
+  (`new-IP:8096`) and the new Host PC IP in developer mode.
+
+### Some movies look "too smooth" (soap opera effect)
+
+Movies are almost always **24 frames per second** (23.976). When one looks as smooth as TV news, it is usually **not
+the file but the TV**: **Auto Motion Plus** (*Picture Clarity* on newer models) interpolates extra frames.
+
+- Samsung keeps **separate picture settings for HDR**. That is why it often affects only 4K HDR movies while regular
+  ones look normal.
+- **Fix:** play an HDR movie (so the TV is in HDR mode), then *Settings → Picture → Expert Settings → Auto Motion
+  Plus* → **Off**, or **Custom** with *Blur* and *Judder* at **0**. The setting is saved only for the mode the TV is in
+  right now, so repeat it during a regular (SDR) movie if needed.
+- The file's real frame rate is shown in Jellyfin in the movie details (Media info → *Frame rate*). **25 fps** are
+  European TV/DVD versions, **50 / 60 fps** TV documentaries, and **48 fps** on a cinema movie means someone
+  artificially doubled the frames. Only a different version of the file helps then.
+
+### Volume: quiet dialogue, loud explosions
+
+*Settings → Sound → Expert Settings → Auto Volume* → **Normal** (or **Night**). It applies to all apps, Jellyfin
+included. (Leveling inside the app does not work on Samsung, see step 6.)
+
+### Deleting movies from the TV
+
+A user with deletion allowed (administrators have it automatically; for others enable it in *Dashboard → Users →
+user → Allow media deletion*) can delete a movie right on the TV: movie details → **⋮** (or hold **OK** on the
+poster) → **Delete**.
+
+- Deletion is **permanent**: the file does not go to the recycle bin. Files with the same name next to it (subtitles)
+  are deleted too.
+- The Jellyfin service needs write access to the movie folder. On data drives that is usually the case
+  (*Authenticated Users: Modify*); check with `icacls D:\MOVIES`.
+- Anyone who shouldn't delete (kids, guests) should have their own account without this right.
+
+---
+
 ## Troubleshooting
 
 | Symptom | Cause / fix |
@@ -307,7 +358,7 @@ Transcode, including the reason.
 | The TV app shows an error after a server update | The app and server versions differ. Download a new `.wgt` of the same version and repeat step 4.5. |
 | `tv_info.py` or `sdb connect` gets no answer on the old IP | The router gave the TV a different address (DHCP). Find it by MAC: `Get-NetNeighbor \| Where-Object LinkLayerAddress -like 'AA-BB-CC*'`. A DHCP reservation in the router fixes it for good. |
 | CH ▲ during a movie skips to the next movie | Normal Jellyfin behaviour (channel = next item). Step 6 changes it, but the leveling itself does not work on Samsung TVs. |
-| After a router restart the TV can't find the server | The PC got a different IP. Set a DHCP reservation for the PC (by MAC) in the router – on an Apple AirPort in AirPort Utility: Internet → DHCP → DHCP Reservations. |
+| After a router restart the TV can't find the server | The PC got a different IP. Set a DHCP reservation for the PC (by MAC) in the router. |
 | API calls return 401 | Since version 12, `?api_key=` in the URL no longer works. Use the header `Authorization: MediaBrowser Client="x", Device="x", DeviceId="x", Version="1", Token="…"`. |
 
 ---
